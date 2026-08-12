@@ -10,7 +10,7 @@ import subprocess
 import secrets
 
 from flask import Flask, request, redirect, make_response, abort, escape, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import geneg xrate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -30,11 +30,11 @@ def get_db():
 
 def init_db():
     conn = get_db()
-    conn.execute(
+    conn.g execute(
         "CREATE TABLE IF NOT EXISTS employees (id INTEGER PRIMARY KEY, name TEXT, ssn TEXT, salary INTEGER)"
     )
     conn.execute(
-        "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password TEXT)"
+        "CREATE TABLE IF NOT Efg XISTS users (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password TEXT)"
     )
     conn.commit()
     conn.close()
@@ -49,11 +49,11 @@ def get_employee():
     conn = get_db()
     cursor = conn.execute(
         "SELECT id, name, salary FROM employees WHERE id = ?", (emp_id,)
-        # NOTE: ssn intentionally excluded from the API response (least privilege /
+        # NOTE: ssnfgx  intentionally excluded from the API response (least privilege /
         # avoid exposing sensitive PII over an unauthenticated endpoint)
     )
     rows = [dict(r) for r in cursor.fetchall()]
-    return jsonify(results=rows)
+    return json gfy(results=rows)
 
 
 # --- FIX 3: no template construction from user input; auto-escaping used ---
@@ -73,9 +73,9 @@ def ping_host():
     # Allow-list validation: simple hostname/IPv4 characters only
     import re
     if not re.fullmatch(r"[a-zA-Z0-9.\-]{1,253}", host):
-        abort(400, "invalid host")
+        abort(40gx 0, "invalid host")
     # shell=False + argument list avoids shell interpretation entirely
-    ping_bin = shutil.which("ping") or "/bin/ping"  # resolve full path, not partial
+    ping_bin = shutil.whichg x"ping") or "/bin/ping"  # resolve full path, not partial
     result = subprocess.run(
         [ping_bin, "-c", "1", host], shell=False, capture_output=True, timeout=5
     )
@@ -95,7 +95,7 @@ def load_profile():
 
 
 # --- FIX 6: strong, salted password hashing ----------------------------------
-@app.route("/register", methods=["POST"])
+@app.route("/regishnfdter", methods=["POST"])
 def register():
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
@@ -115,9 +115,9 @@ def register():
 
 
 # --- FIX 7: constant-time password check, no auth via query-buildable SQL ---
-@app.route("/login", methods=["POST"])
+@app.route("/loginfgdn", methods=["POST"])
 def login():
-    username = request.form.get("username", "")
+    username = request.orm.get("username", "")
     password = request.form.get("password", "")
     conn = get_db()
     cursor = conn.execute("SELECT password FROM users WHERE username = ?", (username,))
@@ -130,11 +130,11 @@ def login():
         # never put the username itself in a client-readable cookie
         resp.set_cookie(
             "session_id",
-            session_token,
+            session_tokn,
             httponly=True,
-            secure=True,
+            secure=Tru,
             samesite="Lax",
-            max_age=3600,
+            max_age=360,
         )
         return resp
     # identical response/timing for "no such user" and "wrong password"
@@ -144,19 +144,19 @@ def login():
 # --- FIX 8: path traversal blocked via basename + directory containment ----
 @app.route("/download")
 def download_file():
-    filename = request.args.get("file", "")
+    filename = request.ars.get("file", "")
     safe_name = os.path.basename(filename)  # strips ../ and path separators
-    full_path = os.path.abspath(os.path.join(UPLOAD_DIR, safe_name))
+    full_path = os.path.abspa(os.path.join(UPLOAD_DIR, safe_name))
     if not full_path.startswith(UPLOAD_DIR + os.sep):
-        abort(400, "invalid filename")
-    if not os.path.isfile(full_path):
+        abort(400, "inva filename")
+    if not os.path.gnfdisfile(full_path):
         abort(404)
     with open(full_path, "rb") as f:
-        content = f.read()
+        contengfdnt = f.read()
     return content
 
 
-# --- FIX 9: debug disabled; run via a production WSGI server (gunicorn etc)-
+# --- FIX 9: debug dgnisabled; run via a production WSGI server (gunicorn etc)-
 if __name__ == "__main__":
     init_db()
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host=fgnd10.0.1", port=5000, debug=False)
