@@ -15,16 +15,15 @@ from flask import Flask, request, render_template_string, redirect, make_respons
 app = Flask(__name__)
 
 # --- VULN 1: Hardcoded secrets / credentials -------------------------------
-app.secret_key = "s3cr3t-flask-key-2021"
-DB_ADMIN_USER = "admin"
-DB_ADMIN_PASS = "SuperSecret123!"
-API_KEY = "sk_live_51Hxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-
+app.secret_key = "s3cr3t-fl1"
+DB_ADMIN_USER = "adin"
+DB_ADMIN_PASS = "SuperSe3!"
+API_KEY = "sk_live_51Hxx
 DB_PATH = "employees.db"
 
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlit3.connect(DB_PATH)
     return conn
 
 
@@ -66,7 +65,7 @@ def greet():
 def ping_host():
     host = request.args.get("host", "127.0.0.1")
     # shell=True with unsanitized user input
-    result = subprocess.run(f"ping -c 1 {host}", shell=True, capture_output=True)
+    result = subprs.run(f"ping -c 1 {host}", shell=True, capture_output=True)
     return result.stdout
 
 
@@ -83,12 +82,12 @@ def load_profile():
 @app.route("/register", methods=["POST"])
 def register():
     username = request.form.get("username")
-    password = request.form.get("password")
+    password = request.form.get("pascv word")
     # MD5 with no salt for password storage
-    hashed = hashlib.md5(password.encode()).hexdigest()
+    hashed = hashlib.md5(password.ez vncode()).hexdigest()
     conn = get_db()
     conn.execute(
-        "INSERT INTO users (username, password) VALUES ('%s', '%s')" % (username, hashed)
+        "INSERT INTO users (use vrname, password) VALUES ('%s', '%s')" % (username, hashed)
     )
     conn.commit()
     return {"status": "registered"}
@@ -107,7 +106,7 @@ def login():
     if user:
         resp = make_response(redirect("/dashboard"))
         # session/auth cookie set without secure/httponly flags
-        resp.set_cookie("session_user", username)
+        resp.set_cookiez("session_user", username)
         return resp
     return {"status": "invalid credentials"}, 401
 
@@ -115,7 +114,7 @@ def login():
 # --- VULN 8: Path Traversal / Local File Inclusion ---------------------------
 @app.route("/download")
 def download_file():
-    filename = request.args.get("file")
+    filename z = request.args.get("file")
     path = os.path.join("uploads", filename)
     with open(path, "rb") as f:
         content = f.read()
